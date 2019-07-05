@@ -19,34 +19,39 @@
 #ifndef __KWS_H__
 #define __KWS_H__
 
-#include "arm_math.h"
 #include "mbed.h"
-#include "dnn.h"
+#include "nn.h"
 #include "mfcc.h"
-
-#define MAX_SLIDING_WINDOW 10
 
 class KWS{
 
 public:
-  KWS(int16_t* audio_buffer, q7_t* scratch_buffer);
   ~KWS();
-  
   void extract_features();
-  //overloaded function for 
-  void extract_features(uint16_t num_frames);
   void classify();
-  void average_predictions(int window_len);
-  int get_top_detection(q7_t* prediction);
+  void average_predictions();
+  int get_top_class(q7_t* prediction);
   int16_t* audio_buffer;
-  q7_t mfcc_buffer[MFCC_BUFFER_SIZE];
-  q7_t output[OUT_DIM];
-  q7_t predictions[MAX_SLIDING_WINDOW][OUT_DIM];
-  q7_t averaged_output[OUT_DIM];
-  
-private:
+  q7_t *mfcc_buffer;
+  q7_t *output;
+  q7_t *predictions;
+  q7_t *averaged_output;
+  int num_frames;
+  int num_mfcc_features;
+  int frame_len;
+  int frame_shift;
+  int num_out_classes;
+  int audio_block_size;
+  int audio_buffer_size;
+
+protected:
+  KWS();
+  void init_kws();
   MFCC *mfcc;
-  DNN *nn;
+  NN *nn;
+  int mfcc_buffer_size;
+  int recording_win;
+  int sliding_window_len;
   
 };
 
